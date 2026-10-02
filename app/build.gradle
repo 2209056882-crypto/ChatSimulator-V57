@@ -1,0 +1,13 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'com.chat.simulator'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'com.chat.simulator'
+        minSdk 26
+        targetSdk 35
+        versionCode 57
+        versionName '57.0'
+    }
+}
