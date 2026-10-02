@@ -1,0 +1,10 @@
+package com.chat.simulator;
+import android.app.Activity; import android.os.Bundle; import android.view.View; import android.webkit.ValueCallback; import android.webkit.WebChromeClient; import android.webkit.WebSettings; import android.webkit.WebView; import android.webkit.WebViewClient; import android.content.Intent; import android.net.Uri;
+public class MainActivity extends Activity {
+ private WebView webView; private ValueCallback<Uri[]> fileCallback; private static final int FILE_CHOOSER=1001;
+ @Override public void onCreate(Bundle b){super.onCreate(b);immersive();webView=new WebView(this);setContentView(webView);WebSettings s=webView.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);s.setAllowContentAccess(true);s.setMediaPlaybackRequiresUserGesture(false);s.setBuiltInZoomControls(false);s.setDisplayZoomControls(false);webView.setWebViewClient(new WebViewClient());webView.setWebChromeClient(new WebChromeClient(){@Override public boolean onShowFileChooser(WebView v,ValueCallback<Uri[]> c,FileChooserParams p){if(fileCallback!=null)fileCallback.onReceiveValue(null);fileCallback=c;try{startActivityForResult(p.createIntent(),FILE_CHOOSER);}catch(Exception e){fileCallback=null;return false;}return true;}});webView.loadUrl("file:///android_asset/index.html");}
+ private void immersive(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
+ @Override protected void onResume(){super.onResume();immersive();} @Override public void onWindowFocusChanged(boolean f){super.onWindowFocusChanged(f);if(f)immersive();}
+ @Override protected void onActivityResult(int r,int c,Intent d){super.onActivityResult(r,c,d);if(r==FILE_CHOOSER&&fileCallback!=null){fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(c,d));fileCallback=null;}}
+ @Override public void onBackPressed(){if(webView!=null&&webView.canGoBack())webView.goBack();else super.onBackPressed();}
+}
